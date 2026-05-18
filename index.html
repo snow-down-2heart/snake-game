@@ -187,6 +187,24 @@ const ACHIEVEMENTS = [
   { score: 500, title: '传说级 🏆',   sub: '积分破五百' },
 ];
 
+const QUOTES = [
+  '凡杀不死我的，必使我更强大。 — 尼采',
+  '失败只是重新开始的机会，这次更明智。 — 亨利·福特',
+  '重要的不是跌倒，而是爬起来。 — 文斯·隆巴迪',
+  '不要因为结束而哭泣，要因它发生过而微笑。 — 泰戈尔',
+  '人生如棋，落子无悔。 — 谚语',
+  '每一次失败都是通向成功的阶梯。 — 爱迪生',
+  '世界上只有一种真正的英雄主义，就是认清生活真相后依然热爱它。 — 罗曼·罗兰',
+  '路漫漫其修远兮，吾将上下而求索。 — 屈原',
+  '长风破浪会有时，直挂云帆济沧海。 — 李白',
+  '山重水复疑无路，柳暗花明又一村。 — 陆游',
+  '天行健，君子以自强不息。 — 《周易》',
+  '宝剑锋从磨砺出，梅花香自苦寒来。 — 警世贤文',
+  '再试一次，别放弃。 — 爱因斯坦',
+  '人生最大的荣耀不在于从不跌倒，而在于每次跌倒后都能爬起来。 — 曼德拉',
+  '坚持不是长跑，而是一次接一次的短跑。 — 佚名',
+];
+
 const GOLDEN_INTERVAL = 12000;
 const GOLDEN_DURATION = 6000;
 const BONUS_INTERVAL_MIN = 25000;
@@ -217,6 +235,7 @@ let state = {
   nextDir: { x: 1, y: 0 },
   alive: true,
   running: false,
+  gameOverQuote: '',
   tickTimer: null,
   goldenTimer: null,
   bonusTimer: null,
@@ -629,10 +648,24 @@ function render() {
     ctx.font = 'bold 32px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('游戏结束', CANVAS_W / 2, CANVAS_H / 2 - 12);
+    ctx.fillText('游戏结束', CANVAS_W / 2, CANVAS_H / 2 - 40);
     ctx.fillStyle = '#8a9ac0';
     ctx.font = '16px sans-serif';
-    ctx.fillText(`最终积分: ${state.score}`, CANVAS_W / 2, CANVAS_H / 2 + 24);
+    ctx.fillText(`最终积分: ${state.score}`, CANVAS_W / 2, CANVAS_H / 2);
+    ctx.fillStyle = '#7ab8d0';
+    ctx.font = '13px sans-serif';
+    ctx.textAlign = 'center';
+    // Word wrap quote
+    const q = state.gameOverQuote;
+    const maxW = CANVAS_W - 60;
+    let line = '', lines = [];
+    for (const ch of q) {
+      const test = line + ch;
+      if (ctx.measureText(test).width > maxW && line.length) { lines.push(line); line = ch; }
+      else { line = test; }
+    }
+    if (line) lines.push(line);
+    lines.forEach((l, i) => ctx.fillText(l, CANVAS_W / 2, CANVAS_H / 2 + 48 + i * 18));
   } else if (!state.running && state.alive) {
     ctx.fillStyle = 'rgba(0,0,0,0.4)';
     ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
@@ -685,9 +718,14 @@ function initGame() {
   state.tickTimer = setInterval(gameTick, getTickSpeed());
 }
 
+function pickQuote() {
+  return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+}
+
 function gameOver() {
   state.alive = false;
   state.running = false;
+  state.gameOverQuote = pickQuote();
   clearInterval(state.tickTimer);
   clearTimeout(state.goldenTimer);
   clearTimeout(state.bonusTimer);
