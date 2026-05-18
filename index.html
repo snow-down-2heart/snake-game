@@ -541,10 +541,12 @@ function togglePause() {
   if (!state.alive) return;
   if (state.running) {
     state.running = false;
+    dpad.style.display = 'none';
     clearInterval(state.tickTimer);
     render();
   } else {
     state.running = true;
+    dpad.style.display = 'block';
     state.tickTimer = setInterval(gameTick, getTickSpeed());
   }
   updatePauseBtn();
@@ -712,6 +714,7 @@ function initGame() {
 
   updateUI();
   updatePauseBtn();
+  dpad.style.display = 'block';
   render();
 
   clearInterval(state.tickTimer);
@@ -731,6 +734,7 @@ function gameOver() {
   clearTimeout(state.bonusTimer);
   updateUI();
   updatePauseBtn();
+  dpad.style.display = 'none';
   render();
 }
 
