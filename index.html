@@ -87,21 +87,23 @@
       width: clamp(44px, 10vw, 60px);
       height: clamp(44px, 10vw, 60px);
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(20,26,46,0.85);
-      color: #c0c8e0;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(20,26,46,0.25);
+      color: rgba(192,200,224,0.7);
       font-size: clamp(18px, 4vw, 26px);
       cursor: pointer;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(2px);
       pointer-events: auto;
-      transition: background 0.08s;
+      transition: background 0.08s, color 0.08s;
       display: flex; align-items: center; justify-content: center;
       user-select: none;
     }
     #dpad button:active {
-      background: rgba(74,122,224,0.4);
+      background: rgba(74,122,224,0.5);
+      color: rgba(255,255,255,0.9);
+      border-color: rgba(255,255,255,0.25);
     }
     @media (pointer: coarse) and (max-width: 800px) {
       #dpad { display: block; }
