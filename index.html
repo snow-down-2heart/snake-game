@@ -152,7 +152,10 @@
   <div class="controls">
     <span class="hint">↑↓←→ / WASD  空格暂停</span>
     <span class="mobile-hint" style="display:none">触屏滑动 / 点按 D-pad</span>
-    <button class="primary" id="btnRestart">重新开始</button>
+    <div style="display:flex;gap:8px">
+      <button id="btnPause" style="display:none;background:#1e2640;border:1px solid #2a3250;color:#e0e4f0;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:clamp(11px,2.5vw,13px);touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all 0.15s">⏸ 暂停</button>
+      <button class="primary" id="btnRestart">重新开始</button>
+    </div>
   </div>
 </div>
 
@@ -406,11 +409,8 @@ canvas.addEventListener('touchend', (e) => {
   const absDy = Math.abs(dy);
   const threshold = 20; // minimum swipe distance in px
 
-  if (absDx < threshold && absDy < threshold) {
-    // It's a tap, not a swipe — toggle pause
-    togglePause();
-    return;
-  }
+  // Tap on canvas does nothing (use pause button instead)
+  if (absDx < threshold && absDy < threshold) return;
 
   if (!state.running) return;
 
@@ -453,6 +453,15 @@ dpad.querySelectorAll('button').forEach(btn => {
     }
   });
 });
+
+const btnPause = document.getElementById('btnPause');
+btnPause.addEventListener('click', togglePause);
+
+function updatePauseBtn() {
+  if (!state.alive) { btnPause.style.display = 'none'; return; }
+  btnPause.style.display = 'inline-block';
+  btnPause.textContent = state.running ? '⏸ 暂停' : '▶ 继续';
+}
 
 document.getElementById('btnRestart').addEventListener('click', restartGame);
 
@@ -499,6 +508,7 @@ function gameTick() {
 function updateUI() {
   scoreEl.textContent = state.score;
   levelEl.textContent = state.level;
+  updatePauseBtn();
   if (state.score > state.highScore) {
     state.highScore = state.score;
     localStorage.setItem('snakeHighScore', String(state.highScore));
@@ -516,6 +526,7 @@ function togglePause() {
     state.running = true;
     state.tickTimer = setInterval(gameTick, getTickSpeed());
   }
+  updatePauseBtn();
 }
 
 // ============================================================
@@ -665,6 +676,7 @@ function initGame() {
   scheduleBonusFood(state.snake, state.foods);
 
   updateUI();
+  updatePauseBtn();
   render();
 
   clearInterval(state.tickTimer);
@@ -678,6 +690,7 @@ function gameOver() {
   clearTimeout(state.goldenTimer);
   clearTimeout(state.bonusTimer);
   updateUI();
+  updatePauseBtn();
   render();
 }
 
